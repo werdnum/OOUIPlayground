@@ -1,0 +1,3 @@
+[submodule "lib/oojs-ui"]
+	path = lib/oojs-ui
+	url = wmgerrit:oojs/ui.git

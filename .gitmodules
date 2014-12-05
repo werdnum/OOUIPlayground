@@ -1,3 +1,3 @@
 [submodule "lib/oojs-ui"]
 	path = lib/oojs-ui
-	url = wmgerrit:oojs/ui.git
+	url = ssh://gerrit.wikimedia.org:29418/oojs/ui.git

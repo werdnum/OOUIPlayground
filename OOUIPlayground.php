@@ -43,8 +43,8 @@ $wgExtensionCredits['specialpage'][] = array(
 
 $dir = dirname( __FILE__ );
 
-require_once __DIR__ . "/ooui-autoload.php";
-
-$wgAutoloadClasses['OOUIPlayground'] = "{$dir}/OOUIPlayground.body.php";
+require_once __DIR__ . "/autoload.php";
+require_once __DIR__ . "/lib/autoload.php";
+require_once __DIR__ . "/vendor/autoload.php";
 
 $wgHooks['ParserFirstCallInit'][] = 'OOUIPlayground::setupParser';

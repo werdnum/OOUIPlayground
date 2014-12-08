@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpdocumentor/reflection-docblock": "~2.0",
+        "sami/sami": "~2.0"
+    }
+}

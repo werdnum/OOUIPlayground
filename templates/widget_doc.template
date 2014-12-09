@@ -1,0 +1,26 @@
+<div class="ooui-playground-doc">
+	<table class="wikitable sortable">
+	<thead>
+		<tr>
+			<th>{{msg "ooui-playground-parameter-name"}}</th>
+			<th>{{msg "ooui-playground-parameter-type"}}</th>
+			<th>{{msg "ooui-playground-parameter-desc"}}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{#each .}}
+		<tr>
+			<td>{{name}}</td>
+			<td>
+				<ul>
+				{{#each types}}
+					<li>{{.}}</li>
+				{{/each}}
+				</ul>
+			</td>
+			<td>{{description}}</td>
+		</tr>
+	{{/each}}
+	</tbody>
+	</table>
+</div>

@@ -1,5 +1,8 @@
 <?php
 
+use OOUIPlayground\Templating;
+use OOUIPlayground\WidgetDocumenter;
+
 class OOUIPlayground {
 	protected static $config = null;
 
@@ -10,6 +13,7 @@ class OOUIPlayground {
 	 */
 	public static function setupParser( Parser $parser ) {
 		$parser->setHook( 'ooui-demo', array( __CLASS__, 'renderDemo' ) );
+		$parser->setHook( 'ooui-doc', array( __CLASS__, 'renderDoc' ) );
 
 		return true;
 	}
@@ -38,6 +42,23 @@ class OOUIPlayground {
 		}
 	}
 
+	public static function renderDoc( $input, array $args, Parser $parser, PPFrame $frame ) {
+		$classStatus = self::getClassFromArgs( $args );
+
+		if ( ! $classStatus->isGood() ) {
+			return Html::element(
+				'span',
+				array( 'class' => 'error' ),
+				$classStatus->getHTML()
+			);
+		}
+
+		$doc = new WidgetDocumenter( $classStatus->getValue() );
+		$params = $doc->getOptions();
+
+		return Templating::renderTemplate( 'widget_doc', $params );
+	}
+
 	/**
 	 * Parser tag extension entry point. Validates input and hands off to getDemo()
 	 * @param  string  $input  Contents of the tag.
@@ -48,25 +69,25 @@ class OOUIPlayground {
 	 */
 	public static function renderDemo( $input, array $args, Parser $parser, PPFrame $frame ) {
 		$classMap = self::getConfig( 'classMap' );
-		$parser->getOutput()->addModules( array( 'oojs-ui' ) );
+		$parser->getOutput()->addModules( array( 'oojs-ui', 'ext.ooui-playground' ) );
+		$parser->getOutput()->addModuleStyles( array( 'oojs-ui', 'ext.ooui-playground' ) );
 
-		if ( ! isset( $args['type'] ) ) {
-			return Html::element( 'span', array( 'class' => 'error' ), 'You must specify a type.' );
-		}
+		$classStatus = self::getClassFromArgs( $args );
 
-		$type =  strtolower( $args['type'] );
-		if ( ! isset( $classMap[$type] ) ) {
+		if ( ! $classStatus->isGood() ) {
 			return Html::element(
 				'span',
 				array( 'class' => 'error' ),
-				'There is no OOUI widget called ' . $type . '.'
+				$classStatus->getHTML()
 			);
 		}
+
+		$class = $classStatus->getValue();
 
 		// Prepare config
 		unset( $args['type'] );
 		$parseResult = FormatJson::parse( $input, FormatJson::FORCE_ASSOC );
-		if ( $parseResult->isOK() ) {
+		if ( trim( $input ) !== '' && $parseResult->isOK() ) {
 			$args = array_merge( $args, $parseResult->getValue() );
 		}
 
@@ -78,22 +99,36 @@ class OOUIPlayground {
 		$languages = self::getConfig( 'languages' );
 		$renderer = new MultiGeSHICodeRenderer( $languages, $parser );
 
-		return Html::rawElement( 'p', null, $warnings ) .
-			"\n\n" . self::getDemo( $type, $args, $renderer );
+		$html = "<p>$warnings</p>\n\n" .
+			self::getDemo( $class, $args, $renderer );
+
+		return Html::rawElement( 'div', array( 'class' => 'ooui-playground-demo' ), $html );
+	}
+
+	protected static function getClassFromArgs( array $args ) {
+		$classMap = self::getConfig( 'classMap' );
+		if ( ! isset( $args['type'] ) ) {
+			return Status::newFatal( 'You must specify a type.' );
+		}
+
+		$type =  strtolower( $args['type'] );
+		if ( ! isset( $classMap[$type] ) ) {
+			return Status::newFatal( 'There is no OOUI widget called ' . $type . '.' );
+		}
+
+		return Status::newGood( $classMap[$type] );
 	}
 
 	/**
 	 * Renders an OOUI widget demo
-	 * @param  string        $type     The name of the widget,
+	 * @param  string        $type     The class name of the widget,
 	 * should exist in the 'classMap' config section
 	 * @param  array         $args     Processed arguments to pass directly to the OOUI widget.
 	 * @param  ICodeRenderer $renderer A code renderer for showing source code
 	 * @return string                  HTML output.
 	 */
-	public static function getDemo( $type, array $args, ICodeRenderer $renderer ) {
+	public static function getDemo( $className, array $args, ICodeRenderer $renderer ) {
 		self::setupOOUI();
-		$classMap = self::getConfig( 'classMap' );
-		$className = $classMap[$type];
 		$class = 'OOUI\\'.$className;
 
 		$obj = new $class( $args );
@@ -101,6 +136,7 @@ class OOUIPlayground {
 
 		$code = $renderer->render( $className, $args );
 
-		return "<p>$output</p>$code";
+		return Html::rawElement( 'div', array( 'class' => 'ooui-playground-widget' ), $output ) .
+			$code;
 	}
 }

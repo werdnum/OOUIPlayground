@@ -41,10 +41,14 @@ $wgExtensionCredits['specialpage'][] = array(
 	'descriptionmsg' => 'oouiplayground-desc',
 );
 
+$wgMessagesDirs['OOUIPlayground'] = __DIR__ . '/i18n';
+
 $dir = dirname( __FILE__ );
 
 require_once __DIR__ . "/autoload.php";
 require_once __DIR__ . "/lib/autoload.php";
 require_once __DIR__ . "/vendor/autoload.php";
+
+require_once __DIR__ . "/resources/Resources.php";
 
 $wgHooks['ParserFirstCallInit'][] = 'OOUIPlayground::setupParser';

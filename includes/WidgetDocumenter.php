@@ -1,5 +1,12 @@
 <?php
 
+namespace OOUIPlayground;
+
+use ReflectionClass;
+use Sami\Parser\Filter\TrueFilter;
+use Sami\Parser\DocBlockParser;
+use Sami\Parser\ParserContext;
+
 class WidgetDocumenter {
 	/** @var ReflectionClass */
 	protected $class;
@@ -30,9 +37,9 @@ class WidgetDocumenter {
 			return array();
 		}
 
-		$filter = new Sami\Parser\Filter\TrueFilter;
-		$parser = new Sami\Parser\DocBlockParser;
-		$context = new Sami\Parser\ParserContext( $filter, $parser, 'pretty printer' );
+		$filter = new TrueFilter;
+		$parser = new DocBlockParser;
+		$context = new ParserContext( $filter, $parser, 'pretty printer' );
 		$context->enterNamespace( 'OOUI' );
 		$doc = $parser->parse( $docComment, $context );
 
@@ -47,6 +54,7 @@ class WidgetDocumenter {
 					return $type[0] . ($type[1] ? '[]' : '');
 				}, $param[0] );
 				$output[$matches[1]] = array(
+					'name' => $matches[1],
 					'types' => $types,
 					'description' => $param[2],
 				);

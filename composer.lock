@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f4cf1146ebfef2f92e4f8b75583500e9",
+    "hash": "f46f4fb6fd23e55040cf5420e68e5f27",
     "packages": [
         {
             "name": "michelf/php-markdown",
@@ -101,6 +101,36 @@
                 "php"
             ],
             "time": "2014-07-23 18:24:17"
+        },
+        {
+            "name": "oojs/oojs-ui",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wikimedia/oojs-ui.git",
+                "reference": "d2a99a581864161e9d6025beb23a0a05d061adb7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wikimedia/oojs-ui/zipball/d2a99a581864161e9d6025beb23a0a05d061adb7",
+                "reference": "d2a99a581864161e9d6025beb23a0a05d061adb7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "php/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "homepage": "https://www.mediawiki.org/wiki/OOjs_UI",
+            "time": "2014-12-06 00:28:58"
         },
         {
             "name": "phpdocumentor/reflection-docblock",

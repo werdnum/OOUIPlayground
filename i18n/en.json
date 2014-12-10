@@ -1,5 +1,7 @@
 {
 	"ooui-playground-parameter-name" : "Parameter name",
 	"ooui-playground-parameter-type" : "Acceptable types",
-	"ooui-playground-parameter-desc" : "Description"
+	"ooui-playground-parameter-desc" : "Description",
+	"ooui-playground-language-php" : "PHP",
+	"ooui-playground-language-javascript" : "JavaScript"
 }

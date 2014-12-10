@@ -7,4 +7,8 @@ $wgResourceModules['ext.ooui-playground'] = array(
 	'styles' => 'display.less',
 	'scripts' => 'display.js',
 	'dependencies' => 'oojs-ui',
+	'messages' => array(
+		"ooui-playground-language-php",
+		"ooui-playground-language-javascript",
+	),
 );

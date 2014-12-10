@@ -11,7 +11,7 @@ $( function() {
 		$.each( ['javascript', 'php'], function( i, language ) {
 			options.push( new OO.ui.ButtonOptionWidget( {
 				data : language,
-				label : language
+				label : mw.msg( 'ooui-playground-language-' + language )
 			} ) );
 		} );
 

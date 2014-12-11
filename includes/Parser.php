@@ -46,7 +46,7 @@ class OOUIPlayground {
 		$classStatus = self::getClassFromArgs( $args );
 
 		if ( ! $classStatus->isGood() ) {
-			return Html::element(
+			return Html::rawElement(
 				'span',
 				array( 'class' => 'error' ),
 				$classStatus->getHTML()
@@ -75,7 +75,7 @@ class OOUIPlayground {
 		$classStatus = self::getClassFromArgs( $args );
 
 		if ( ! $classStatus->isGood() ) {
-			return Html::element(
+			return Html::rawElement(
 				'span',
 				array( 'class' => 'error' ),
 				$classStatus->getHTML()
@@ -86,7 +86,10 @@ class OOUIPlayground {
 
 		// Prepare config
 		unset( $args['type'] );
-		$parseResult = FormatJson::parse( $input, FormatJson::FORCE_ASSOC );
+		$parseResult = FormatJson::parse(
+			$input,
+			FormatJson::FORCE_ASSOC | FormatJson::TRY_FIXING | FormatJson::STRIP_COMMENTS
+		);
 		if ( trim( $input ) !== '' && $parseResult->isOK() ) {
 			$args = array_merge( $args, $parseResult->getValue() );
 		}
@@ -94,6 +97,14 @@ class OOUIPlayground {
 		$warnings = '';
 		if ( trim( $input ) !== '' && ! $parseResult->isGood() ) {
 			$warnings = $parseResult->getHTML();
+
+			if ( ! $parseResult->isOK() ) {
+				return Html::rawElement(
+					'span',
+					array( 'class' => 'error' ),
+					$warnings
+				);
+			}
 		}
 
 		$languages = self::getConfig( 'languages' );
@@ -108,12 +119,12 @@ class OOUIPlayground {
 	protected static function getClassFromArgs( array $args ) {
 		$classMap = self::getConfig( 'classMap' );
 		if ( ! isset( $args['type'] ) ) {
-			return Status::newFatal( 'You must specify a type.' );
+			return Status::newFatal( 'ooui-playground-error-no-type' );
 		}
 
 		$type =  strtolower( $args['type'] );
 		if ( ! isset( $classMap[$type] ) ) {
-			return Status::newFatal( 'There is no OOUI widget called ' . $type . '.' );
+			return Status::newFatal( 'ooui-playground-error-bad-type', $type );
 		}
 
 		return Status::newGood( $classMap[$type] );
@@ -136,7 +147,12 @@ class OOUIPlayground {
 
 		$code = $renderer->render( $className, $args );
 
-		return Html::rawElement( 'div', array( 'class' => 'ooui-playground-widget' ), $output ) .
-			$code;
+		return $code .
+			Html::rawElement(
+				'div',
+				array(
+					'class' => 'ooui-playground-widget'
+				),
+				$output );
 	}
 }

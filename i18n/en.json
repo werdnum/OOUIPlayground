@@ -3,5 +3,7 @@
 	"ooui-playground-parameter-type" : "Acceptable types",
 	"ooui-playground-parameter-desc" : "Description",
 	"ooui-playground-language-php" : "PHP",
-	"ooui-playground-language-javascript" : "JavaScript"
+	"ooui-playground-language-javascript" : "JavaScript",
+	"ooui-playground-error-no-type" : "You must specify a type",
+	"ooui-playground-error-bad-type" : "There is no type called '$1'"
 }

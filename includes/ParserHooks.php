@@ -1,10 +1,18 @@
 <?php
 
-use OOUIPlayground\Templating;
-use OOUIPlayground\WidgetDocumenter;
+namespace OOUIPlayground;
 
-class OOUIPlayground {
+use FormatJson;
+use Html;
+use OOUI\MediaWikiTheme;
+use OOUI\Theme;
+use Parser;
+use PPFrame;
+use Status;
+
+class ParserHooks {
 	protected static $config = null;
+	protected static $widgetRepository = null;
 
 	/**
 	 * Handler for ParserFirstCallInit hook
@@ -32,18 +40,32 @@ class OOUIPlayground {
 	}
 
 	/**
+	 * Retrieves an object used to query widget information
+	 * @return WidgetRepository
+	 */
+	protected static function getWidgetRepository() {
+		if ( is_null( self::$widgetRepository ) ) {
+			self::$widgetRepository = new WidgetRepository(
+				self::getConfig( 'classMap' )
+			);
+		}
+
+		return self::$widgetRepository;
+	}
+
+	/**
 	 * Does any initialisation necessary to get OOUI to work.
 	 */
 	protected static function setupOOUI() {
 		static $setupDone = false;
 
 		if ( ! $setupDone ) {
-			OOUI\Theme::setSingleton( new OOUI\MediaWikiTheme );
+			Theme::setSingleton( new MediaWikiTheme );
 		}
 	}
 
 	public static function renderDoc( $input, array $args, Parser $parser, PPFrame $frame ) {
-		$classStatus = self::getClassFromArgs( $args );
+		$classStatus = self::getWidgetFromAttributes( $args );
 
 		if ( ! $classStatus->isGood() ) {
 			return Html::rawElement(
@@ -53,8 +75,8 @@ class OOUIPlayground {
 			);
 		}
 
-		$doc = new WidgetDocumenter( $classStatus->getValue() );
-		$params = $doc->getOptions();
+		$doc = new WidgetDocumenter();
+		$params = $doc->getOptions( $classStatus->getValue() );
 
 		return Templating::renderTemplate( 'widget_doc', $params );
 	}
@@ -72,7 +94,7 @@ class OOUIPlayground {
 		$parser->getOutput()->addModules( array( 'oojs-ui', 'ext.ooui-playground' ) );
 		$parser->getOutput()->addModuleStyles( array( 'oojs-ui', 'ext.ooui-playground' ) );
 
-		$classStatus = self::getClassFromArgs( $args );
+		$classStatus = self::getWidgetFromAttributes( $args );
 
 		if ( ! $classStatus->isGood() ) {
 			return Html::rawElement(
@@ -116,36 +138,42 @@ class OOUIPlayground {
 		return Html::rawElement( 'div', array( 'class' => 'ooui-playground-demo' ), $html );
 	}
 
-	protected static function getClassFromArgs( array $args ) {
+	/**
+	 * Reads the attributes of a tag call to get info about the requested class 
+	 * @param  array  $attributes Attributes of a tag call.
+	 * @return OOUIPlayground\WidgetInfo
+	 */
+	protected static function getWidgetFromAttributes( array $attributes ) {
 		$classMap = self::getConfig( 'classMap' );
-		if ( ! isset( $args['type'] ) ) {
+		if ( ! isset( $attributes['type'] ) ) {
 			return Status::newFatal( 'ooui-playground-error-no-type' );
 		}
 
-		$type =  strtolower( $args['type'] );
-		if ( ! isset( $classMap[$type] ) ) {
+		$type = strtolower( $attributes['type'] );
+		$class = self::getWidgetRepository()->getInfo( $type );
+
+		if ( ! is_object( $class ) ) {
 			return Status::newFatal( 'ooui-playground-error-bad-type', $type );
 		}
 
-		return Status::newGood( $classMap[$type] );
+		return Status::newGood( $class );
 	}
 
 	/**
 	 * Renders an OOUI widget demo
-	 * @param  string        $type     The class name of the widget,
+	 * @param  WidgetInfo    $info     A WidgetInfo class for the widget being demonstrated.
 	 * should exist in the 'classMap' config section
 	 * @param  array         $args     Processed arguments to pass directly to the OOUI widget.
 	 * @param  ICodeRenderer $renderer A code renderer for showing source code
 	 * @return string                  HTML output.
 	 */
-	public static function getDemo( $className, array $args, ICodeRenderer $renderer ) {
+	public static function getDemo( WidgetInfo $class, array $args, ICodeRenderer $renderer ) {
 		self::setupOOUI();
-		$class = 'OOUI\\'.$className;
 
-		$obj = new $class( $args );
+		$obj = $class->instantiate( $args );
 		$output = $obj->toString();
 
-		$code = $renderer->render( $className, $args );
+		$code = $renderer->render( $class, $args );
 
 		return $code .
 			Html::rawElement(

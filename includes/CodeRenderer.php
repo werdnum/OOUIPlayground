@@ -1,7 +1,12 @@
 <?php
 
+namespace OOUIPlayground;
+
+use Html;
+use Parser;
+
 interface ICodeRenderer {
-	function render( $class, array $args );
+	function render( WidgetInfo $class, array $args );
 }
 
 abstract class ConfiguredCodeRenderer implements ICodeRenderer {
@@ -12,9 +17,9 @@ abstract class ConfiguredCodeRenderer implements ICodeRenderer {
 		$this->config = $config;
 	}
 
-	protected function getCode( $class, array $args ) {
+	protected function getCode( WidgetInfo $class, array $args ) {
 		$replacements = array(
-			'$class' => $class,
+			'$class' => $class->getClassName(),
 			'$args' => call_user_func( $this->config['encodeVars'], $args ),
 		);
 
@@ -36,7 +41,7 @@ class GeSHICodeRenderer extends ConfiguredCodeRenderer {
 		$this->languageName = $languageName;
 	}
 
-	public function render( $class, array $args ) {
+	public function render( WidgetInfo $class, array $args ) {
 		$code = $this->getCode( $class, $args );
 
 		$output = $this->parser->extensionSubstitution(
@@ -70,7 +75,7 @@ class PreCodeRenderer extends ConfiguredCodeRenderer {
 		$this->parser = $parser;
 	}
 
-	public function render( $class, array $args ) {
+	public function render( WidgetInfo $class, array $args ) {
 		$html = Html::element( 'pre', null, $this->getCode( $class, $args ) );
 		return $this->parser->insertStripItem( $html );
 	}
@@ -80,7 +85,7 @@ abstract class MultiCodeRenderer implements ICodeRenderer {
 	/** @var array */
 	protected $renderers;
 
-	public function render( $class, array $args ) {
+	public function render( WidgetInfo $class, array $args ) {
 		$output = '';
 
 		foreach( $this->renderers as $renderer ) {
@@ -118,7 +123,7 @@ class MultiGeSHICodeRenderer extends MultiCodeRenderer {
 }
 
 class NullCodeRenderer implements ICodeRenderer {
-	function render( $class, array $args ) {
+	function render( WidgetInfo $class, array $args ) {
 		return '';
 	}
 }

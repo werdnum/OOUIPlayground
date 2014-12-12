@@ -2,23 +2,23 @@
 
 namespace OOUIPlayground;
 
-use ReflectionClass;
 use Sami\Parser\Filter\TrueFilter;
 use Sami\Parser\DocBlockParser;
 use Sami\Parser\ParserContext;
+use ReflectionClass;
 
 class WidgetDocumenter {
-	/** @var ReflectionClass */
-	protected $class;
+	/**
+	 * Gets the configuration options for this Widget.
+	 * @return array of options. Each option has the following keys:
+	 * * name: The code name of the option.
+	 * * types: Array of accepted types.
+	 * * description: The description in the code.
+	 */
+	public function getOptions( WidgetInfo $info ) {
+		$options = $this->getOptionsFromClass( $info->getReflection() );
 
-	function __construct( $className ) {
-		$this->class = new ReflectionClass( 'OOUI\\' . $className );
-	}
-
-	public function getOptions() {
-		$options = $this->getOptionsFromClass( $this->class );
-
-		foreach( $this->getMixins() as $mixin ) {
+		foreach( $info->getMixins() as $mixin ) {
 			$mixinClass = new ReflectionClass( $mixin );
 			$options = array_merge(
 				$options,
@@ -29,6 +29,11 @@ class WidgetDocumenter {
 		return $options;
 	}
 
+	/**
+	 * Reads out configuration options from the doc comment of a class.
+	 * @param  ReflectionClass $class The class to examine.
+	 * @return array Like the output from getOptions()
+	 */
 	protected function getOptionsFromClass( ReflectionClass $class ) {
 		$constructor = $class->getConstructor();
 		$docComment = $constructor->getDocComment();
@@ -62,15 +67,5 @@ class WidgetDocumenter {
 		}
 
 		return $output;
-	}
-
-	protected function getMixins() {
-		$mixinProp = $this->class->getProperty( 'mixins' );
-		$mixinProp->setAccessible( true );
-
-		$obj = $this->class->newInstance();
-		$mixins = $mixinProp->getValue( $obj );
-
-		return $mixins;
 	}
 }

@@ -51,4 +51,4 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 require_once __DIR__ . "/resources/Resources.php";
 
-$wgHooks['ParserFirstCallInit'][] = 'OOUIPlayground::setupParser';
+$wgHooks['ParserFirstCallInit'][] = 'OOUIPlayground\ParserHooks::setupParser';

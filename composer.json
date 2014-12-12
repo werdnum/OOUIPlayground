@@ -3,6 +3,7 @@
         "phpdocumentor/reflection-docblock": "~2.0",
         "sami/sami": "~2.0",
         "zordius/lightncandy": "~0.17",
-        "oojs/oojs-ui": "0.4.*"
+        "oojs/oojs-ui": "0.4.*",
+        "pimple/pimple": "~2.1"
     }
 }

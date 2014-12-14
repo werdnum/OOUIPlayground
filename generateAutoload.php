@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../includes/utils/AutoloadGenerator.php';
 function main() {
 	$base = __DIR__;
 	$generator = new AutoloadGenerator( $base );
-	foreach ( array( 'includes' ) as $dir ) {
+	foreach ( array( 'includes', 'tests/phpunit/mocks' ) as $dir ) {
 		$generator->readDir( $base . '/' . $dir );
 	}
 

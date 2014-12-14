@@ -5,5 +5,8 @@
         "zordius/lightncandy": "~0.17",
         "oojs/oojs-ui": "0.4.*",
         "pimple/pimple": "~2.1"
+    },
+    "require-dev": {
+        "mikey179/vfsStream": "~1.3"
     }
 }

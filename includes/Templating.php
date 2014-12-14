@@ -4,42 +4,47 @@ namespace OOUIPlayground;
 
 use LightnCandy;
 
-abstract class Templating {
-	protected static $templates = array();
+class Templating {
+	protected $templates = array();
+	protected $basePath = '';
 
-	public static function renderTemplate( $templateName, array $input ) {
-		$renderFunction = self::getTemplate( $templateName );
+	public function __construct( $basePath ) {
+		$this->basePath = $basePath;
+	}
+
+	public function renderTemplate( $templateName, array $input ) {
+		$renderFunction = $this->getTemplate( $templateName );
 
 		return $renderFunction( $input );
 	}
 
-	public static function getTemplate( $templateName ) {
-		if ( ! isset( self::$templates[$templateName] ) ) {
-			$phpFile = self::getBasePath() . $templateName . '.php';
-			$templateFile = self::getBasePath() . $templateName . '.template';
+	public function getTemplate( $templateName ) {
+		if ( ! isset( $this->templates[$templateName] ) ) {
+			$phpFile = $this->basePath . $templateName . '.php';
+			$templateFile = $this->basePath . $templateName . '.template';
 
 			$cacheOk = file_exists( $phpFile ) &&
 				filemtime( $phpFile ) >= filemtime( $templateFile );
 
 			if ( ! $cacheOk ) {
 				$templateStr = file_get_contents( $templateFile );
-				$phpStr = LightnCandy::compile( $templateStr, self::getCompileOptions() );
+				$phpStr = LightnCandy::compile( $templateStr, $this->getCompileOptions() );
 				file_put_contents( $phpFile, $phpStr );
 			}
 
 			$renderFunction = include $phpFile;
 
-			self::$templates[$templateName] = $renderFunction;
+			$this->templates[$templateName] = $renderFunction;
 		}
 
-		return self::$templates[$templateName];
+		return $this->templates[$templateName];
 	}
 
-	protected static function getCompileOptions() {
+	protected function getCompileOptions() {
 		return array(
 			'flags' => LightnCandy::FLAG_STANDALONE | LightnCandy::FLAG_MUSTACHE,
 			'basedir' => array(
-				self::getBasePath(),
+				$this->basePath,
 			),
 			'fileext' => array(
 				'.template',
@@ -55,14 +60,10 @@ abstract class Templating {
 	 * @param array $named unused
 	 * @return string Plaintext
 	 */
-	public static function msgHelper( array $args, array $named ) {
+	public function msgHelper( array $args, array $named ) {
 		$message = null;
 		$str = array_shift( $args );
 
 		return wfMessage( $str )->params( $args )->text();
-	}
-
-	protected static function getBasePath() {
-		return __DIR__ . '/../templates/';
 	}
 }

@@ -11,6 +11,7 @@ $wgAutoloadClasses += array(
 	'OOUIPlayground\\GroupElementFilter' => __DIR__ . '/includes/argument-filters/GroupElementFilter.php',
 	'OOUIPlayground\\ICodeRenderer' => __DIR__ . '/includes/CodeRenderer.php',
 	'OOUIPlayground\\InvalidGroupElementItemException' => __DIR__ . '/includes/argument-filters/GroupElementFilter.php',
+	'OOUIPlayground\\MockFilter' => __DIR__ . '/tests/phpunit/mocks/MockFilter.php',
 	'OOUIPlayground\\MultiCodeRenderer' => __DIR__ . '/includes/CodeRenderer.php',
 	'OOUIPlayground\\MultiGeSHICodeRenderer' => __DIR__ . '/includes/CodeRenderer.php',
 	'OOUIPlayground\\MultiPreCodeRenderer' => __DIR__ . '/includes/CodeRenderer.php',
@@ -24,4 +25,5 @@ $wgAutoloadClasses += array(
 	'OOUIPlayground\\WidgetFactory' => __DIR__ . '/includes/WidgetFactory.php',
 	'OOUIPlayground\\WidgetInfo' => __DIR__ . '/includes/WidgetInfo.php',
 	'OOUIPlayground\\WidgetRepository' => __DIR__ . '/includes/WidgetInfo.php',
+	'OOUI\\MockWidget' => __DIR__ . '/tests/phpunit/mocks/MockWidget.php',
 );

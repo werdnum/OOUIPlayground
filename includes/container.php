@@ -56,4 +56,8 @@ $container['widgetFactory'] = function( $c ) {
 	return $factory;
 };
 
+$container['templating'] = function( $c ) {
+	return new Templating( __DIR__ . '/templates/' );
+};
+
 return $container;

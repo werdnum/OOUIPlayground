@@ -61,7 +61,7 @@ class ParserHooks {
 		$doc = new WidgetDocumenter();
 		$params = $doc->getOptions( $classStatus->getValue() );
 
-		return Templating::renderTemplate( 'widget_doc', $params );
+		return $this->getContainer( 'templating' )->renderTemplate( 'widget_doc', $params );
 	}
 
 	/**

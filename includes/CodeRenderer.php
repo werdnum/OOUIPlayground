@@ -81,9 +81,13 @@ class PreCodeRenderer extends ConfiguredCodeRenderer {
 	}
 }
 
-abstract class MultiCodeRenderer implements ICodeRenderer {
+class MultiCodeRenderer implements ICodeRenderer {
 	/** @var array */
 	protected $renderers;
+
+	function __construct( array $renderers ) {
+		$this->renderers = $renderers;
+	}
 
 	public function render( WidgetInfo $class, array $args ) {
 		$output = '';
@@ -106,7 +110,7 @@ class MultiPreCodeRenderer extends MultiCodeRenderer {
 			$renderers[$name] = new PreCodeRenderer( $info, $parser );
 		}
 
-		$this->renderers = $renderers;
+		parent::__construct( $renderers );
 	}
 }
 
@@ -118,7 +122,7 @@ class MultiGeSHICodeRenderer extends MultiCodeRenderer {
 			$renderers[$name] = new GeSHICodeRenderer( $name, $info, $parser );
 		}
 
-		$this->renderers = $renderers;
+		parent::__construct( $renderers );
 	}
 }
 

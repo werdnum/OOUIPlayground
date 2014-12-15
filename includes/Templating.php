@@ -3,6 +3,7 @@
 namespace OOUIPlayground;
 
 use LightnCandy;
+use MWException;
 
 class Templating {
 	protected $templates = array();
@@ -27,6 +28,9 @@ class Templating {
 				filemtime( $phpFile ) >= filemtime( $templateFile );
 
 			if ( ! $cacheOk ) {
+				if ( ! file_exists( $templateFile ) ) {
+					throw new TemplatingException( "Unable to load $templateName from $templateFile" );
+				}
 				$templateStr = file_get_contents( $templateFile );
 				$phpStr = LightnCandy::compile( $templateStr, $this->getCompileOptions() );
 				file_put_contents( $phpFile, $phpStr );
@@ -66,4 +70,8 @@ class Templating {
 
 		return wfMessage( $str )->params( $args )->text();
 	}
+}
+
+class TemplatingException extends MWException {
+
 }

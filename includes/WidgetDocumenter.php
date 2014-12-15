@@ -59,6 +59,7 @@ class WidgetDocumenter {
 						'name' => $matches[1],
 						'types' => $types,
 						'description' => $param[2],
+						'class' => $class->getName(),
 					);
 				}
 			}

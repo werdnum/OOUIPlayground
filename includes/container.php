@@ -18,8 +18,6 @@ $container['classMap'] = array(
 	'label' => 'LabelWidget',
 	'radioinput' => 'RadioInputWidget',
 	'textinput' => 'TextInputWidget',
-	'fieldset' => 'FieldsetLayout',
-	'field' => 'FieldLayout',
 );
 
 $container['languages'] = array(
@@ -57,7 +55,7 @@ $container['widgetFactory'] = function( $c ) {
 };
 
 $container['templating'] = function( $c ) {
-	return new Templating( __DIR__ . '/templates/' );
+	return new Templating( __DIR__ . '/../templates/' );
 };
 
 return $container;

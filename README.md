@@ -19,6 +19,7 @@ to confirm installation.
 require_once( "$IP/extensions/OOUIPlayground/OOUIPlayground.php" )
 ```
 
+Note: Also ensure the `templates` folder is writable so that compiled templates can be cached on disk.
 
 ## What this extension does
 

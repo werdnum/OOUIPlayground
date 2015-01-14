@@ -4,6 +4,7 @@ namespace OOUIPlayground;
 
 use FormatJson;
 use Pimple\Container;
+use SimpleLightNCandy;
 
 $container = new Container;
 
@@ -55,7 +56,17 @@ $container['widgetFactory'] = function( $c ) {
 };
 
 $container['templating'] = function( $c ) {
-	return new Templating( __DIR__ . '/../templates/' );
+	$templating = new SimpleLightNCandy( __DIR__ . '/../templates/' );
+	$templating->addHelper( 'msg',
+		function( array $args, array $named ) {
+			$message = null;
+			$str = array_shift( $args );
+
+			return wfMessage( $str )->params( $args )->text();
+		}
+	);
+
+	return $templating;
 };
 
 return $container;
